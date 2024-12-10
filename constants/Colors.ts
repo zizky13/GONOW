@@ -16,4 +16,8 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
   },
+
+  mazarine: '#273c75',
+  pensive: '#dcdde1',
+  mattPurple: '#8c7ae6',
 };
