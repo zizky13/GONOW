@@ -2,6 +2,7 @@ import {View, StyleSheet, Text, TextInput, Button, Image } from 'react-native';
 import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dimensions } from 'react-native';
+import { useLogin } from '../utils/login';
 
 const windowWidth : number = Dimensions.get('window').width;
 const windowHeight : number = Dimensions.get('window').height;
@@ -9,7 +10,8 @@ const windowHeight : number = Dimensions.get('window').height;
 export default function HomeScreen() {
   const [text, changeText] = useState('');
   const [username, changeUsername] = useState('');
-  
+  const { login } = useLogin();
+
   return (
       <SafeAreaView style={styles.screen}>
         <View style={styles.title}>
@@ -39,6 +41,7 @@ export default function HomeScreen() {
 
         <Button
         title='submit'
+        onPress={() => login(username, text)}
         />
       </SafeAreaView>
   );

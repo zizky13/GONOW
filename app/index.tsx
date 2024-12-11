@@ -1,25 +1,56 @@
-import React, { useEffect } from 'react';
-import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
+import { useRouter } from "expo-router";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import useLoginState from "@/hooks/loginState";
+import app from "@/utils/firebase";
 
 const Index = () => {
   const router = useRouter();
+  const auth = getAuth(app);
+  const [loading, setLoading] = useState(true);
+  const isLoggedIn = useLoginState((state) => state.isLoggedIn);
+  const setIsLoggedIn = useLoginState((state) => state.setIsLoggedIn);
 
-  const auth: boolean = true; // Example: false means user is not logged in
-
+  // Auth state listener
   useEffect(() => {
-    // Delay navigation slightly to ensure Root Layout has mounted
-    const timer = setTimeout(() => {
-      if (auth) {
-        router.replace('/home'); // Navigate to Home if authenticated
-      } else {
-        router.replace('/login'); // Navigate to Login if not authenticated
+    console.log("Setting up auth listener");
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("Auth state changed:", !!user);
+      setIsLoggedIn(!!user); // Update Zustand store
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [auth, setIsLoggedIn]);
+
+  // Navigate based on login state
+  useEffect(() => {
+    console.log("Navigation effect running, isLoggedIn:", isLoggedIn);
+    if (!loading) {
+      try {
+        router.replace("/home");
+        // if (isLoggedIn) {
+        //   console.log("Navigating to home...");
+        // } else {
+        //   console.log("Navigating to login...");
+        //   router.replace("/login");
+        // }
+      } catch (error) {
+        console.error("Navigation error:", error);
       }
-    }, 0); // Delay is very short but ensures layout mounting
+    }
+  }, [isLoggedIn, loading, router]);
 
-    return () => clearTimeout(timer); // Cleanup timer if component unmounts
-  }, [auth, router]);
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
-  return null; // No UI, just redirection logic
+  return null;
 };
 
 export default Index;

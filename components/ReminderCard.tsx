@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { RadioButton } from "react-native-paper";
 
 import React from "react";
+import ModalForm from "./ModalForm";
 
 interface ReminderCardProps {
     date: string;
@@ -16,7 +17,9 @@ const ReminderCard: React.FC<ReminderCardProps> = (
     return (
         <View style={styles.cardView}>
             <Pressable
-                onPress={() => console.log("Hello")}
+                onPress={
+                    () => { return <ModalForm />; }
+                }
                 style={{ flex: 1, flexDirection: "row" }}
             >
                 <View style={styles.actionContainer}>

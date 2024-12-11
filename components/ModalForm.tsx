@@ -3,10 +3,13 @@ import React from "react";
 import { Button, RadioButton, TextInput } from "react-native-paper";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { mazarine, pensive } from "../constants/Colors";
+import { addDocumentToTimeBased } from "@/utils/firestore";
 
 const ModalForm = () => {
-  const [checked, setChecked] = React.useState("first");
+  const [checked, setChecked] = React.useState("nonPrio");
   const [date, setDate] = React.useState(new Date());
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
 
   const onChange = (event: any, selectedDate: Date) => {
     const currentDate = selectedDate;
@@ -49,22 +52,22 @@ const ModalForm = () => {
             style={styles.radioButton}
           >
             <RadioButton
-              value="first"
-              status={checked === "first" ? "checked" : "unchecked"}
-              onPress={() => setChecked("first")}
+              value="priority"
+              status={checked === "priority" ? "checked" : "unchecked"}
+              onPress={() => setChecked("priority")}
               color={pensive}
             />
-            <Text style={styles.textStyle}>First</Text>
+            <Text style={styles.textStyle}>Ya</Text>
           </View>
 
           <View style={styles.radioButton}>
             <RadioButton
-              value="second"
-              status={checked === "second" ? "checked" : "unchecked"}
-              onPress={() => setChecked("second")}
+              value="nonPrio"
+              status={checked === "nonPrio" ? "checked" : "unchecked"}
+              onPress={() => setChecked("nonPrio")}
               color={pensive}
             />
-            <Text style={styles.textStyle}>Second</Text>
+            <Text style={styles.textStyle}>Tidak</Text>
           </View>
         </View>
       </View>
@@ -90,8 +93,22 @@ const ModalForm = () => {
         </Button>
       </View>
 
-      <Text style={[styles.textStyle, { margin: 8}]}>Selected: {date.toLocaleString()}</Text>
-      <Button mode="contained" buttonColor={pensive} textColor={mazarine}>
+      <Text style={[styles.textStyle, { margin: 8 }]}>
+        Selected: {date.toLocaleString()}
+      </Text>
+      <Button
+        mode="contained"
+        buttonColor={pensive}
+        textColor={mazarine}
+        onPress={() =>
+          addDocumentToTimeBased(
+            description,
+            title,
+            false,
+            checked === "priority",
+            date,
+          )}
+      >
         Submit
       </Button>
     </View>
@@ -134,5 +151,5 @@ const styles = StyleSheet.create({
   radioContainer: {
     flexDirection: "row",
     margin: 8,
-  }
+  },
 });
