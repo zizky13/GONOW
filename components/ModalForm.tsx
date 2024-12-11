@@ -100,14 +100,15 @@ const ModalForm = () => {
         mode="contained"
         buttonColor={pensive}
         textColor={mazarine}
-        onPress={() =>
+        onPress={() => {
           addDocumentToTimeBased(
             description,
             title,
             false,
             checked === "priority",
             date,
-          )}
+          );
+        }}
       >
         Submit
       </Button>

@@ -5,6 +5,30 @@ import ReminderCard from "@/components/ReminderCard";
 import ModalForm from "@/components/ModalForm";
 import { formatDate, formatTime } from "@/utils/dateUtils";
 import { FAB, Modal, Portal } from "react-native-paper";
+import { getDocumentsFromTimeBased } from "@/utils/firestore";
+
+const dummy: any[] = [
+    {
+        title: "test",
+        date: "2021-10-12",
+        time: "10:00",
+    },
+    {
+        title: "test",
+        date: "2021-10-12",
+        time: "10:00",
+    },
+    {
+        title: "test",
+        date: "2021-10-12",
+        time: "10:00",
+    },
+    {
+        title: "test",
+        date: "2021-10-12",
+        time: "10:00",
+    },
+];
 
 const home = () => {
     const date = new Date();
@@ -14,7 +38,23 @@ const home = () => {
     const [visible, setVisible] = React.useState(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
-    const containerStyle = { backgroundColor: "#273c75", padding: 20};
+    const containerStyle = { backgroundColor: "#273c75", padding: 20 };
+
+    const [dbData, setDbData] = React.useState([]);
+
+    React.useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await getDocumentsFromTimeBased();
+                console.log("Fetched data:", data); // Debug log
+                setDbData(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -25,11 +65,34 @@ const home = () => {
             </View>
 
             <View style={styles.cardContainer}>
-                <ReminderCard
+                <FlatList
+                    data={dbData}
+                    renderItem={({ item }) => {
+                        console.log("Rendering item:", item); // Debug log
+                        return (
+                            <ReminderCard
+                                date={formatDate(item.timeMark.toDate())}
+                                time={formatTime(item.timeMark.toDate())}
+                                title={item.title}
+                            />
+                        );
+                    }}
+                    keyExtractor={(item, index) => item.title + index}
+                    ListEmptyComponent={() => <Text>No reminders found</Text>}
+                />
+
+                {
+                    /* <ReminderCard
                     date={formattedDate}
                     time={formattedTime}
                     title={"testout"}
                 />
+                <ReminderCard
+                    date={formattedDate}
+                    time={formattedTime}
+                    title={"testout"}
+                /> */
+                }
             </View>
 
             <FAB
@@ -44,7 +107,7 @@ const home = () => {
                     onDismiss={hideModal}
                     contentContainerStyle={containerStyle}
                 >
-                    <ModalForm/>
+                    <ModalForm />
                 </Modal>
             </Portal>
         </SafeAreaView>

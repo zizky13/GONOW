@@ -1,6 +1,6 @@
 import app from "./firebase"; // Import the Firebase app
-import { getFirestore } from "firebase/firestore";
-import { doc, setDoc } from "firebase/firestore";
+import { collectionGroup, getFirestore } from "firebase/firestore";
+import { doc, setDoc, getDocs, collection } from "firebase/firestore";
 
 const db = getFirestore(app); // Firestore reference
 
@@ -43,4 +43,17 @@ const addDocumentToTimeBased = async (
     }
 };
 
-export { addDocumentToTimeBased }; // Export the function
+const getDocumentsFromTimeBased = async () => {
+    try {
+        const collections = collectionGroup(db, "timeBased");
+        const querySnapshot = await getDocs(collections);
+        const documents = querySnapshot.docs.map((doc) => doc.data());
+        console.log("Documents: ", documents[0].timeMark.toDate());
+        console.log("Documents: ", documents[0].title);
+        return documents;
+    } catch (error) {
+        console.error("Error getting documents: ", error);
+    }
+}
+
+export { addDocumentToTimeBased, getDocumentsFromTimeBased }; // Export the function
