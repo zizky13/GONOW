@@ -4,12 +4,14 @@ import { Button, RadioButton, TextInput } from "react-native-paper";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { mazarine, pensive } from "../constants/Colors";
 import { addDocumentToTimeBased } from "@/utils/firestore";
+import { useModalState } from "@/hooks/modalState";
 
 const ModalForm = () => {
   const [checked, setChecked] = React.useState("nonPrio");
   const [date, setDate] = React.useState(new Date());
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const { hideModal } = useModalState();
 
   const onChange = (event: any, selectedDate: Date) => {
     const currentDate = selectedDate;
@@ -38,11 +40,13 @@ const ModalForm = () => {
       <TextInput
         label="Judul"
         style={styles.inputContainer}
+        onChangeText={(text) => setTitle(text)}
       />
 
       <TextInput
         label="Deskripsi"
         style={{ margin: 8 }}
+        onChangeText={(text) => setDescription(text)}
       />
 
       <View style={{ justifyContent: "flex-start", alignItems: "flex-start" }}>
@@ -107,7 +111,10 @@ const ModalForm = () => {
             false,
             checked === "priority",
             date,
-          );
+            false
+          ).then(() => {
+            hideModal();
+          });
         }}
       >
         Submit

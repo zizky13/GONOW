@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { RadioButton } from "react-native-paper";
+import { deleteDocumentFromTimeBased } from "@/utils/firestore";
 
 import React from "react";
 import ModalForm from "./ModalForm";
@@ -8,10 +9,11 @@ interface ReminderCardProps {
     date: string;
     time: string;
     title: string;
+    timeStamp: string;
 }
 
 const ReminderCard: React.FC<ReminderCardProps> = (
-    { date, time, title },
+    { date, time, title, timeStamp },
 ) => {
     const [checked, setChecked] = React.useState("not");
     return (
@@ -26,7 +28,10 @@ const ReminderCard: React.FC<ReminderCardProps> = (
                     <RadioButton
                         value="done"
                         status={checked === "done" ? "checked" : "unchecked"}
-                        onPress={() => setChecked("done")}
+                        onPress={() =>{
+                            setChecked("done")
+                            deleteDocumentFromTimeBased(timeStamp)
+                        }}
                     />
                 </View>
 

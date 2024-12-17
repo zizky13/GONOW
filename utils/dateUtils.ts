@@ -8,6 +8,7 @@ export const formatTime = (date: Date): string => {
     });
   };
   
+  // Format date to a readable string
   export const formatDate = (date: Date): string => {
     return new Intl.DateTimeFormat('id-ID', {
       weekday: 'long',

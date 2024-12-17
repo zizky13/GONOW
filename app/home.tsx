@@ -1,52 +1,50 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
 import ReminderCard from "@/components/ReminderCard";
 import ModalForm from "@/components/ModalForm";
 import { formatDate, formatTime } from "@/utils/dateUtils";
 import { FAB, Modal, Portal } from "react-native-paper";
-import { getDocumentsFromTimeBased } from "@/utils/firestore";
-
-const dummy: any[] = [
-    {
-        title: "test",
-        date: "2021-10-12",
-        time: "10:00",
-    },
-    {
-        title: "test",
-        date: "2021-10-12",
-        time: "10:00",
-    },
-    {
-        title: "test",
-        date: "2021-10-12",
-        time: "10:00",
-    },
-    {
-        title: "test",
-        date: "2021-10-12",
-        time: "10:00",
-    },
-];
+import {
+    getDocumentsFromTimeBased,
+    updateDocumentFromTimeBased,
+} from "@/utils/firestore";
+import { useModalState, useNotificationModalState } from "@/hooks/modalState";
+import ModalNotification from "@/components/ModalNotification";
 
 const home = () => {
-    const date = new Date();
-    const formattedTime = formatTime(date);
-    const formattedDate = formatDate(date);
+    interface Reminder {
+        timeMark: firebase.firestore.Timestamp;
+        title: string;
+        timeStamp: string;
+        showNotificationModal: boolean;
+    }
 
-    const [visible, setVisible] = React.useState(false);
-    const showModal = () => setVisible(true);
-    const hideModal = () => setVisible(false);
-    const containerStyle = { backgroundColor: "#273c75", padding: 20 };
+    const [dbData, setDbData] = React.useState<Reminder[]>([]);
+    const { visible, showModal, hideModal } = useModalState();
+    const [currentDoc, setCurrentDoc] = React.useState("");
+    const {
+        visibleNotification,
+        showNotificationModal,
+        hideNotificationModal,
+    } = useNotificationModalState();
 
-    const [dbData, setDbData] = React.useState([]);
+    // Function to hide notification modal and update the document status
+    const handleHideNotification = async (currentDoc: string) => {
+        await updateDocumentFromTimeBased(currentDoc, {
+            showNotificationModal: false,
+            hasConfirmed: true,
+        });
+        hideNotificationModal();
+    };
 
+    // Fetch data from Firestore
     React.useEffect(() => {
         const fetchData = async () => {
             try {
                 const data = await getDocumentsFromTimeBased();
-                console.log("Fetched data:", data); // Debug log
                 setDbData(data);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -54,13 +52,25 @@ const home = () => {
         };
 
         fetchData();
-    }, []);
+        dbData.forEach((item) => {
+            if (item.showNotificationModal) {
+                try {
+                    if (item.showNotificationModal) {
+                        showNotificationModal();
+                        setCurrentDoc(item.timeStamp);
+                    }
+                } catch (error) {
+                    console.error("Error showing notification:", error);
+                }
+            }
+        });
+    }, [dbData]);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.userInfoContainer}>
                 <View style={styles.userInfo}>
-                    <Text>Hello, {}</Text>
+                    <Text>Hello, User!</Text>
                 </View>
             </View>
 
@@ -68,31 +78,19 @@ const home = () => {
                 <FlatList
                     data={dbData}
                     renderItem={({ item }) => {
-                        console.log("Rendering item:", item); // Debug log
                         return (
+                            // console.log(item)
                             <ReminderCard
                                 date={formatDate(item.timeMark.toDate())}
                                 time={formatTime(item.timeMark.toDate())}
                                 title={item.title}
+                                timeStamp={item.timeStamp}
                             />
                         );
                     }}
-                    keyExtractor={(item, index) => item.title + index}
+                    keyExtractor={(item, index) => item.timeStamp + index}
                     ListEmptyComponent={() => <Text>No reminders found</Text>}
                 />
-
-                {
-                    /* <ReminderCard
-                    date={formattedDate}
-                    time={formattedTime}
-                    title={"testout"}
-                />
-                <ReminderCard
-                    date={formattedDate}
-                    time={formattedTime}
-                    title={"testout"}
-                /> */
-                }
             </View>
 
             <FAB
@@ -105,9 +103,17 @@ const home = () => {
                 <Modal
                     visible={visible}
                     onDismiss={hideModal}
-                    contentContainerStyle={containerStyle}
+                    contentContainerStyle={styles.containerStyle}
                 >
                     <ModalForm />
+                </Modal>
+
+                <Modal
+                    visible={visibleNotification}
+                    onDismiss={() => handleHideNotification(currentDoc)}
+                    contentContainerStyle={styles.containerStyle}
+                >
+                    <ModalNotification />
                 </Modal>
             </Portal>
         </SafeAreaView>
@@ -140,6 +146,11 @@ const styles = StyleSheet.create({
         margin: 20,
         right: 0,
         bottom: 10,
+    },
+
+    containerStyle: {
+        backgroundColor: "#273c75",
+        padding: 20,
     },
 });
 
