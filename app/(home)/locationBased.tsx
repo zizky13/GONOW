@@ -3,28 +3,31 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
-import ReminderCard from "@/components/ReminderCard";
 import ModalForm from "@/components/ModalForm";
 import { formatDate, formatTime } from "@/utils/dateUtils";
 import { FAB, Modal, Portal } from "react-native-paper";
 import {
-    getDocumentsFromTimeBased,
-    updateDocumentFromTimeBased,
+    getDocumentsFromLocBased,
+    updateDocumentFromLocBased,
 } from "@/utils/firestore";
 import { useModalState, useNotificationModalState } from "@/hooks/modalState";
 import ModalNotification from "@/components/ModalNotification";
+import LocationReminderCard from "@/components/LocationReminderCard";
 
-const home = () => {
+
+const locationBased = () => {
     interface Reminder {
         timeMark: firebase.firestore.Timestamp;
         title: string;
         timeStamp: string;
         showNotificationModal: boolean;
+        location: {latitude: number, longitude: number};
     }
 
     const [dbData, setDbData] = React.useState<Reminder[]>([]);
     const { visible, showModal, hideModal } = useModalState();
     const [currentDoc, setCurrentDoc] = React.useState("");
+
     const {
         visibleNotification,
         showNotificationModal,
@@ -33,7 +36,7 @@ const home = () => {
 
     // Function to hide notification modal and update the document status
     const handleHideNotification = async (currentDoc: string) => {
-        await updateDocumentFromTimeBased(currentDoc, {
+        await updateDocumentFromLocBased(currentDoc, {
             showNotificationModal: false,
             hasConfirmed: true,
         });
@@ -44,7 +47,7 @@ const home = () => {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await getDocumentsFromTimeBased();
+                const data = await getDocumentsFromLocBased();
                 setDbData(data);
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -52,18 +55,18 @@ const home = () => {
         };
 
         fetchData();
-        dbData.forEach((item) => {
-            if (item.showNotificationModal) {
-                try {
-                    if (item.showNotificationModal) {
-                        showNotificationModal();
-                        setCurrentDoc(item.timeStamp);
-                    }
-                } catch (error) {
-                    console.error("Error showing notification:", error);
-                }
-            }
-        });
+        // dbData.forEach((item) => {
+        //     if (item.showNotificationModal) {
+        //         try {
+        //             if (item.showNotificationModal) {
+        //                 showNotificationModal();
+        //                 setCurrentDoc(item.timeStamp);
+        //             }
+        //         } catch (error) {
+        //             console.error("Error showing notification:", error);
+        //         }
+        //     }
+        // });
     }, [dbData]);
 
     return (
@@ -78,11 +81,11 @@ const home = () => {
                 <FlatList
                     data={dbData}
                     renderItem={({ item }) => {
+                        // console.log(item)
                         return (
-                            // console.log(item)
-                            <ReminderCard
-                                date={formatDate(item.timeMark.toDate())}
-                                time={formatTime(item.timeMark.toDate())}
+                            <LocationReminderCard
+                                lat={item.location.latitude}
+                                long={item.location.longitude}
                                 title={item.title}
                                 timeStamp={item.timeStamp}
                             />
@@ -154,4 +157,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default home;
+export default locationBased;

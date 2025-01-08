@@ -4,7 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, Tabs } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -14,8 +14,18 @@ import { PaperProvider } from "react-native-paper";
 import { createTamagui, TamaguiProvider } from "@tamagui/core";
 import { config } from "@tamagui/config/v3";
 import { useColorScheme } from "../hooks/useColorScheme";
+import * as Notifications from "expo-notifications";
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 const tamaguiConfig = createTamagui(config);
 type Conf = typeof tamaguiConfig;
@@ -34,6 +44,7 @@ export default function RootLayout() {
     if (loaded) {
       SplashScreen.hideAsync();
     }
+    // Configure notification handler
   }, [loaded]);
 
   if (!loaded) {
@@ -48,8 +59,7 @@ export default function RootLayout() {
         >
           <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="home" options={{ headerShown: false }} />
+            <Stack.Screen name="(home)" options={{ headerShown: false }} />
             <Slot />
           </Stack>
           <StatusBar style="auto" />

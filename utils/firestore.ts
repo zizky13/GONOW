@@ -40,9 +40,52 @@ const addDocumentToTimeBased = async (
     }
 };
 
+const addDocumentToLocBased = async (
+    description: string,
+    hasConfirmed: boolean,
+    location: [number, number],
+    priority: boolean,
+    radius: number,
+    showNotificationModal: boolean,
+    timeStamp: string,
+    title: string
+) => {
+    try {
+        // Reference to the '/data/joko/locationBased' subcollection
+        await setDoc(
+            doc(db, "data/joko/locationBased", timeStamp),
+            {
+                description: description,
+                hasConfirmed: hasConfirmed,
+                location: location,
+                priority: priority,
+                radius: radius,
+                showNotificationModal: showNotificationModal,
+                timeStamp: timeStamp,
+                title: title
+            },
+        );
+
+        console.log("Document successfully written with ID:", timeStamp);
+    } catch (error) {
+        console.error("Error writing document: ", error);
+    }
+};
+
 const getDocumentsFromTimeBased = async () => {
     try {
         const collections = collectionGroup(db, "timeBased");
+        const querySnapshot = await getDocs(collections);
+        const documents = querySnapshot.docs.map((doc) => doc.data());
+        return documents;
+    } catch (error) {
+        console.error("Error getting documents: ", error);
+    }
+};
+
+const getDocumentsFromLocBased = async () => {
+    try {
+        const collections = collectionGroup(db, "locationBased");
         const querySnapshot = await getDocs(collections);
         const documents = querySnapshot.docs.map((doc) => doc.data());
         return documents;
@@ -79,6 +122,35 @@ const deleteDocumentFromTimeBased = async (timeStamp: string) => {
     }
 };
 
+const deleteDocumentFromLocBased = async (timeStamp: string) => {
+    try {
+        // Validate input
+        if (!timeStamp) {
+            throw new Error("TimeStamp is required");
+        }
+
+        // Get document reference
+        const docRef = doc(db, "data/joko/locationBased", timeStamp);
+
+        // Check if document exists first
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            throw new Error(
+                `Document with timeStamp ${timeStamp} does not exist`,
+            );
+        }
+
+        // Delete document
+        await deleteDoc(docRef);
+        console.log("Document successfully deleted with ID:", timeStamp);
+        return true;
+    } catch (error) {
+        console.error("Error deleting document:", error);
+        throw error; // Propagate error to caller
+    }
+
+};
+
 const updateDocumentFromTimeBased = async (timeStamp: string, data: any) => {
     try {
         // Validate input
@@ -107,9 +179,41 @@ const updateDocumentFromTimeBased = async (timeStamp: string, data: any) => {
     }
 };
 
+const updateDocumentFromLocBased = async (timeStamp: string, data: any) => {
+    try {
+        // Validate input
+        if (!timeStamp) {
+            throw new Error("TimeStamp is required");
+        }
+
+        // Get document reference
+        const docRef = doc(db, "data/joko/locationBased", timeStamp);
+
+        // Check if document exists first
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            throw new Error(
+                `Document with timeStamp ${timeStamp} does not exist`,
+            );
+        }
+
+        // Update document
+        await setDoc(docRef, data, { merge: true });
+        console.log("Document successfully updated with ID:", timeStamp);
+        return true;
+    } catch (error) {
+        console.error("Error updating document:", error);
+        throw error; // Propagate error to caller
+    }
+}
+
 export {
     addDocumentToTimeBased,
+    addDocumentToLocBased,
     deleteDocumentFromTimeBased,
+    deleteDocumentFromLocBased,
     getDocumentsFromTimeBased,
+    getDocumentsFromLocBased,
     updateDocumentFromTimeBased,
+    updateDocumentFromLocBased
 }; // Export the function

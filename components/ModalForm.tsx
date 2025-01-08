@@ -111,7 +111,7 @@ const ModalForm = () => {
             false,
             checked === "priority",
             date,
-            false
+            false,
           ).then(() => {
             hideModal();
           });

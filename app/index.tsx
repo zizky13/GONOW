@@ -30,12 +30,6 @@ const Index = () => {
     if (!loading) {
       try {
         router.replace("/home");
-        // if (isLoggedIn) {
-        //   console.log("Navigating to home...");
-        // } else {
-        //   console.log("Navigating to login...");
-        //   router.replace("/login");
-        // }
       } catch (error) {
         console.error("Navigation error:", error);
       }
