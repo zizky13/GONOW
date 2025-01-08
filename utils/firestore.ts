@@ -1,5 +1,5 @@
 import app from "./firebase"; // Import the Firebase app
-import { collectionGroup, getFirestore } from "firebase/firestore";
+import { collectionGroup, GeoPoint, getFirestore } from "firebase/firestore";
 import { deleteDoc, doc, getDocs, setDoc, getDoc } from "firebase/firestore";
 
 const db = getFirestore(app); // Firestore reference
@@ -43,17 +43,18 @@ const addDocumentToTimeBased = async (
 const addDocumentToLocBased = async (
     description: string,
     hasConfirmed: boolean,
-    location: [number, number],
+    location: GeoPoint,
     priority: boolean,
     radius: number,
     showNotificationModal: boolean,
-    timeStamp: string,
     title: string
 ) => {
     try {
+        const date: number = Date.parse(new Date());
+        const documentId = date.toString(); // Convert the date to a string
         // Reference to the '/data/joko/locationBased' subcollection
         await setDoc(
-            doc(db, "data/joko/locationBased", timeStamp),
+            doc(db, "data/joko/locationBased", documentId),
             {
                 description: description,
                 hasConfirmed: hasConfirmed,
@@ -61,12 +62,12 @@ const addDocumentToLocBased = async (
                 priority: priority,
                 radius: radius,
                 showNotificationModal: showNotificationModal,
-                timeStamp: timeStamp,
+                timeStamp: documentId,
                 title: title
             },
         );
 
-        console.log("Document successfully written with ID:", timeStamp);
+        console.log("Document successfully written with ID:", documentId);
     } catch (error) {
         console.error("Error writing document: ", error);
     }

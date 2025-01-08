@@ -3,8 +3,7 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
-import ModalForm from "@/components/ModalForm";
-import { formatDate, formatTime } from "@/utils/dateUtils";
+import LocationBasedModal from "@/components/LocationBasedModal";
 import { FAB, Modal, Portal } from "react-native-paper";
 import {
     getDocumentsFromLocBased,
@@ -108,7 +107,7 @@ const locationBased = () => {
                     onDismiss={hideModal}
                     contentContainerStyle={styles.containerStyle}
                 >
-                    <ModalForm />
+                    <LocationBasedModal />
                 </Modal>
 
                 <Modal
