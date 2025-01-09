@@ -11,11 +11,9 @@ import {
     getDocumentsFromTimeBased,
     updateDocumentFromTimeBased,
 } from "@/utils/firestore";
-import { useModalState, useNotificationModalState } from "@/hooks/modalState";
-import ModalNotification from "@/components/ModalNotification";
+import { useModalState } from "@/hooks/modalState";
 import * as Notifications from "expo-notifications";
-
-
+import { pensive, mazarine } from "@/constants/Colors";
 
 const home = () => {
     interface Reminder {
@@ -26,22 +24,8 @@ const home = () => {
     }
 
     const [dbData, setDbData] = React.useState<Reminder[]>([]);
-    const { visible, showModal, hideModal } = useModalState();
+    const { visible, modalType, showModal, hideModal } = useModalState();
     const [currentDoc, setCurrentDoc] = React.useState("");
-    const {
-        visibleNotification,
-        showNotificationModal,
-        hideNotificationModal,
-    } = useNotificationModalState();
-
-    // Function to hide notification modal and update the document status
-    const handleHideNotification = async (currentDoc: string) => {
-        await updateDocumentFromTimeBased(currentDoc, {
-            showNotificationModal: false,
-            hasConfirmed: true,
-        });
-        hideNotificationModal();
-    };
 
     const notificationHandler = async () => {
         const identifier = await Notifications.scheduleNotificationAsync({
@@ -70,7 +54,6 @@ const home = () => {
             if (item.showNotificationModal) {
                 try {
                     if (item.showNotificationModal) {
-                        showNotificationModal();
                         setCurrentDoc(item.timeStamp);
                     }
                 } catch (error) {
@@ -84,7 +67,7 @@ const home = () => {
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.userInfoContainer}>
                 <View style={styles.userInfo}>
-                    <Text>Hello, User!</Text>
+                    <Text style={{color: 'white'}}>Hello, User!</Text>
                 </View>
             </View>
 
@@ -95,10 +78,10 @@ const home = () => {
                         return (
                             // console.log(item)
                             <ReminderCard
-                                date={formatDate(item.timeMark.toDate())}
-                                time={formatTime(item.timeMark.toDate())}
-                                title={item.title}
-                                timeStamp={item.timeStamp}
+                                date={formatDate(item?.timeMark?.toDate())}
+                                time={formatTime(item?.timeMark?.toDate())}
+                                title={item?.title}
+                                timeStamp={item?.timeStamp}
                             />
                         );
                     }}
@@ -110,24 +93,16 @@ const home = () => {
             <FAB
                 icon="plus"
                 style={styles.fab}
-                onPress={showModal}
+                onPress={() => showModal("time")}
             />
 
             <Portal>
                 <Modal
-                    visible={visible}
+                    visible={visible && modalType === "time"}
                     onDismiss={hideModal}
                     contentContainerStyle={styles.containerStyle}
                 >
                     <ModalForm />
-                </Modal>
-
-                <Modal
-                    visible={visibleNotification}
-                    onDismiss={() => handleHideNotification(currentDoc)}
-                    contentContainerStyle={styles.containerStyle}
-                >
-                    <ModalNotification />
                 </Modal>
             </Portal>
         </SafeAreaView>
@@ -136,13 +111,13 @@ const home = () => {
 
 const styles = StyleSheet.create({
     userInfoContainer: {
-        backgroundColor: "red",
+        backgroundColor: '#dcdde1',
         flex: 1 / 10,
         padding: 16,
     },
 
     userInfo: {
-        backgroundColor: "green",
+        backgroundColor: "#273c75",
         flex: 1,
         borderWidth: 1,
         borderRadius: 12,
@@ -150,7 +125,7 @@ const styles = StyleSheet.create({
     },
 
     cardContainer: {
-        backgroundColor: "yellow",
+        backgroundColor: "#dcdde1",
         flex: 1,
         padding: 8,
     },

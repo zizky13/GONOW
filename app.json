@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.zizky13.gonow"
+      "package": "com.zizky13.gonow",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -29,7 +30,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "@rnmapbox/maps",
+        {
+          "mapboxAccessToken": "${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

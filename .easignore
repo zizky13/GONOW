@@ -38,7 +38,3 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-#google
-smart-reminder-aa0b8-firebase-adminsdk-6ts4e-b2c3750b7b.json
-
-google-services.json
