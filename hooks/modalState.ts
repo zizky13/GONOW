@@ -2,7 +2,8 @@ import { create } from 'zustand';
 
 interface ModalState {
     visible: boolean;
-    showModal: () => void;
+    modalType: 'time' | 'location' | null;
+    showModal: (type: 'time' | 'location') => void;
     hideModal: () => void;
 }
 
@@ -14,8 +15,9 @@ interface NotificationModalState {
 
 const useModalState = create<ModalState>((set) => ({
     visible: false,
-    showModal: () => set({ visible: true }),
-    hideModal: () => set({ visible: false }),
+    modalType: null,
+    showModal: (type) => set({ visible: true, modalType: type }),
+    hideModal: () => set({ visible: false, modalType: null }),
 }));
 
 const useNotificationModalState = create<NotificationModalState>((set) => ({

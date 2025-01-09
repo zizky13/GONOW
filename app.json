@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.zizky13.gonow"
+      "package": "com.zizky13.gonow",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",

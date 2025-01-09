@@ -7,10 +7,8 @@ import LocationBasedModal from "@/components/LocationBasedModal";
 import { FAB, Modal, Portal } from "react-native-paper";
 import {
     getDocumentsFromLocBased,
-    updateDocumentFromLocBased,
 } from "@/utils/firestore";
-import { useModalState, useNotificationModalState } from "@/hooks/modalState";
-import ModalNotification from "@/components/ModalNotification";
+import { useModalState } from "@/hooks/modalState";
 import LocationReminderCard from "@/components/LocationReminderCard";
 
 
@@ -24,23 +22,9 @@ const locationBased = () => {
     }
 
     const [dbData, setDbData] = React.useState<Reminder[]>([]);
-    const { visible, showModal, hideModal } = useModalState();
+    const { visible, modalType, showModal, hideModal } = useModalState();
     const [currentDoc, setCurrentDoc] = React.useState("");
 
-    const {
-        visibleNotification,
-        showNotificationModal,
-        hideNotificationModal,
-    } = useNotificationModalState();
-
-    // Function to hide notification modal and update the document status
-    const handleHideNotification = async (currentDoc: string) => {
-        await updateDocumentFromLocBased(currentDoc, {
-            showNotificationModal: false,
-            hasConfirmed: true,
-        });
-        hideNotificationModal();
-    };
 
     // Fetch data from Firestore
     React.useEffect(() => {
@@ -72,7 +56,7 @@ const locationBased = () => {
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.userInfoContainer}>
                 <View style={styles.userInfo}>
-                    <Text>Hello, User!</Text>
+                    <Text style={{color:'white'}}>Hello, User!</Text>
                 </View>
             </View>
 
@@ -83,10 +67,10 @@ const locationBased = () => {
                         // console.log(item)
                         return (
                             <LocationReminderCard
-                                lat={item.location.latitude}
-                                long={item.location.longitude}
-                                title={item.title}
-                                timeStamp={item.timeStamp}
+                                lat={item?.location?.latitude}
+                                long={item?.location?.longitude}
+                                title={item?.title}
+                                timeStamp={item?.timeStamp}
                             />
                         );
                     }}
@@ -98,24 +82,16 @@ const locationBased = () => {
             <FAB
                 icon="plus"
                 style={styles.fab}
-                onPress={showModal}
+                onPress={() => showModal('location')}
             />
 
             <Portal>
                 <Modal
-                    visible={visible}
+                    visible={visible && modalType === 'location'}
                     onDismiss={hideModal}
                     contentContainerStyle={styles.containerStyle}
                 >
                     <LocationBasedModal />
-                </Modal>
-
-                <Modal
-                    visible={visibleNotification}
-                    onDismiss={() => handleHideNotification(currentDoc)}
-                    contentContainerStyle={styles.containerStyle}
-                >
-                    <ModalNotification />
                 </Modal>
             </Portal>
         </SafeAreaView>
@@ -124,13 +100,13 @@ const locationBased = () => {
 
 const styles = StyleSheet.create({
     userInfoContainer: {
-        backgroundColor: "red",
+        backgroundColor: '#dcdde1',
         flex: 1 / 10,
         padding: 16,
     },
 
     userInfo: {
-        backgroundColor: "green",
+        backgroundColor: "#273c75",
         flex: 1,
         borderWidth: 1,
         borderRadius: 12,
@@ -138,7 +114,7 @@ const styles = StyleSheet.create({
     },
 
     cardContainer: {
-        backgroundColor: "yellow",
+        backgroundColor: "#dcdde1",
         flex: 1,
         padding: 8,
     },

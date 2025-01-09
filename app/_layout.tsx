@@ -15,6 +15,15 @@ import { createTamagui, TamaguiProvider } from "@tamagui/core";
 import { config } from "@tamagui/config/v3";
 import { useColorScheme } from "../hooks/useColorScheme";
 import * as Notifications from "expo-notifications";
+import { NotificationProvider } from "@/context/NotificationContext";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+})
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -52,19 +61,21 @@ export default function RootLayout() {
   }
 
   return (
-    <TamaguiProvider config={tamaguiConfig}>
-      <PaperProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(home)" options={{ headerShown: false }} />
-            <Slot />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </PaperProvider>
-    </TamaguiProvider>
+    <NotificationProvider>
+      <TamaguiProvider config={tamaguiConfig}>
+        <PaperProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(home)" options={{ headerShown: false }} />
+              <Slot />
+            </Stack>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </PaperProvider>
+      </TamaguiProvider>
+    </NotificationProvider>
   );
 }
