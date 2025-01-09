@@ -29,7 +29,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "@rnmapbox/maps",
+        {
+          "mapboxAccessToken": "${process.env.EXPO_PUBLIC_MAPBOX_ACCESS_TOKEN}"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

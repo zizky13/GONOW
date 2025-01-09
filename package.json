@@ -19,11 +19,16 @@
     "@react-native-firebase/app": "^21.6.1",
     "@react-native-firebase/auth": "^21.6.1",
     "@react-navigation/native": "^7.0.0",
+    "@rnmapbox/maps": "^10.1.33",
     "@tamagui/config": "^1.120.1",
     "dotenv": "^16.4.7",
     "expo": "~52.0.18",
+    "expo-constants": "~17.0.3",
+    "expo-device": "~7.0.1",
     "expo-font": "~13.0.1",
     "expo-linking": "~7.0.3",
+    "expo-location": "^18.0.4",
+    "expo-notifications": "~0.29.11",
     "expo-router": "4.0.11",
     "expo-splash-screen": "~0.29.18",
     "expo-status-bar": "~2.0.0",
@@ -39,10 +44,7 @@
     "react-native-screens": "~4.1.0",
     "react-native-web": "~0.19.13",
     "tamagui": "^1.120.1",
-    "zustand": "^5.0.2",
-    "expo-notifications": "~0.29.11",
-    "expo-device": "~7.0.1",
-    "expo-constants": "~17.0.3"
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
